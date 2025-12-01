@@ -1,3 +1,4 @@
+use core::str;
 use std::io;
 use std::fs;
 use std::io::Write;
@@ -49,7 +50,7 @@ fn main(){
         input_command = input_command.trim().to_string();
 
         match ewutsearch_lib::_SEARCH_commandsearch(&input_command){
-            Ok(_) => println!(),
+            Ok(okturn) => ewutrm_lib::_LIBFUNC_print("return_ok_color", okturn),
             Err(errr) => println!("ERR! {}", errr)
         }
         

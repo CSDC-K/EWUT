@@ -18,9 +18,12 @@ term_ascii = """
 
 """
 
-term_ascii_color = [150, 100 , 125]
+basic_str_color = []
+
+
+term_ascii_color = [30, 191, 227]
 
 input_str = "->"
-input_str_color = [120, 200, 255] # rgb code
+input_str_color = [255, 255, 255] # rgb code
 
-return_back_color = [0, 100, 255]
+return_ok_color = [10, 209, 27]

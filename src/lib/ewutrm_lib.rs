@@ -25,7 +25,7 @@ struct EWUT_config {
     input_str : String,
     input_str_color : [u8; 3],
 
-    return_back_color : [u8; 3],
+    return_ok_color : [u8; 3],
 }
 
 pub fn _LIBFUNC_print_ascii_to_term(){
@@ -34,11 +34,11 @@ pub fn _LIBFUNC_print_ascii_to_term(){
     println!(r#"{}"#, ascii_conf.term_ascii.truecolor(term_r, term_g, term_b));
 }
 
-pub fn _LIBFUNC_print(type_of_print : &str, print_content : &str) {
+pub fn _LIBFUNC_print(type_of_print : &str, print_content : String) {
     let print_conf = _event_load_configs();
 
     let print_type = match type_of_print {
-        "return_back_color" => print_conf.return_back_color,
+        "return_ok_color" => print_conf.return_ok_color,
         _ => [255, 255, 255]
     };
 
