@@ -1,3 +1,9 @@
+/// TERMINAL OUTPUT SYSTEM LIBRARY
+/// this library is for basic and not input required functions.
+/// LIB : BASIC_OUTPUT_TERMINAL_FUNCTIONS
+/// VER : 0.1
+
+
 use std::io;
 use std::fs;
 use std::io::Write;

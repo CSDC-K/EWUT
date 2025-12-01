@@ -6,16 +6,13 @@ use std::io::stdout;
 use colored::Colorize;
 use serde::{Deserialize, Serialize};
 
-use crossterm::{
-    execute,
-    style::{Color, SetBackgroundColor, ResetColor},
-    terminal::{Clear, ClearType},
-};
 
 use crate::lib::ewutrm_lib;
+use crate::lib::ewutsearch_lib;
 
 mod lib{
     pub mod ewutrm_lib;
+    pub mod ewutsearch_lib;
 }
 
 
@@ -40,18 +37,24 @@ fn main(){
     let ewut_config = _event_load_configs();
     let [inp_r, inp_g, inp_b] = ewut_config.input_str_color;
     let [term_r, term_g, term_b] = ewut_config.term_ascii_color;
-    execute!(stdout(), SetBackgroundColor(Color::Blue)).unwrap();
-    execute!(stdout(), Clear(ClearType::All)).unwrap();
     let mut input_command : String = String::new();
 
 
-    //
-    //println!(r#"{}"#, ewut_config.term_ascii.truecolor(term_r, term_g, term_b));
+    ewutrm_lib::_LIBFUNC_print_ascii_to_term(); // first time ascii write
+    
+    loop { // loop for the inputs
+        print!("{}", ewut_config.input_str.truecolor(inp_r, inp_g, inp_b));
+        stdout().flush().unwrap(); // flush memory for print
+        stdin().read_line(&mut input_command).expect("Error!");
+        input_command = input_command.trim().to_string();
 
-    ewutrm_lib::_LIBFUNC_print_ascii_to_term();
-    print!("{}", ewut_config.input_str.truecolor(inp_r, inp_g, inp_b));
-    stdout().flush().unwrap(); // flush memory for print
-    stdin().read_line(&mut input_command).expect("Error!");
+        match ewutsearch_lib::_SEARCH_commandsearch(&input_command){
+            Ok(okk) => println!("OK! {}", okk),
+            Err(errr) => println!("ERR! {}", errr)
+        }
+        
+    }
+
 }
 
 
