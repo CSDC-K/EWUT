@@ -36,20 +36,20 @@ fn main(){
     // load ThemeConfigs
     let ewut_config = _event_load_configs();
     let [inp_r, inp_g, inp_b] = ewut_config.input_str_color;
-    let [term_r, term_g, term_b] = ewut_config.term_ascii_color;
     let mut input_command : String = String::new();
 
 
     ewutrm_lib::_LIBFUNC_print_ascii_to_term(); // first time ascii write
     
     loop { // loop for the inputs
+        input_command.clear();
         print!("{}", ewut_config.input_str.truecolor(inp_r, inp_g, inp_b));
         stdout().flush().unwrap(); // flush memory for print
         stdin().read_line(&mut input_command).expect("Error!");
         input_command = input_command.trim().to_string();
 
         match ewutsearch_lib::_SEARCH_commandsearch(&input_command){
-            Ok(okk) => println!("OK! {}", okk),
+            Ok(_) => println!(),
             Err(errr) => println!("ERR! {}", errr)
         }
         

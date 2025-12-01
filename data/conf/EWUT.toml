@@ -22,3 +22,5 @@ term_ascii_color = [150, 100 , 125]
 
 input_str = "->"
 input_str_color = [120, 200, 255] # rgb code
+
+return_back_color = [0, 100, 255]
