@@ -23,7 +23,7 @@ basic_str_color = []
 
 term_ascii_color = [30, 191, 227]
 
-input_str = "->"
+input_str = "-> "
 input_str_color = [255, 255, 255] # rgb code
 
 return_ok_color = [10, 209, 27]

@@ -10,10 +10,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::lib::ewutrm_lib;
 use crate::lib::ewutsearch_lib;
+use crate::lib::ewutcom_lib;
 
 mod lib{
     pub mod ewutrm_lib;
     pub mod ewutsearch_lib;
+    pub mod ewutcom_lib;
 }
 
 

@@ -5,6 +5,8 @@
 /// VER : 0.1
 
 use std::collections::HashMap;
+use crate::ewutcom_lib;
+use crate::ewutrm_lib;
 
 
 pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
@@ -13,10 +15,12 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
     // insert fn to hash.
     commands.insert("/help", _CALL_help);
     commands.insert("/exit", _CALL_exit);
+    commands.insert("/clear", _CALL_clear_cli);
+    commands.insert("/0", _CALLDIRECT_asciiart);
 
     if let Some(com) = commands.get(command_input){
         let comreturn = com();
-        Ok(comreturn)
+        Ok(comreturn) // debug return
     } else {
         Err(format!("NO COMMAND FOUND"))
     }
@@ -28,9 +32,19 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
 
 
 fn _CALL_help() -> String{
-    return String::from("help is called.");
+    ewutcom_lib::_COM_help()
 }
 
 fn _CALL_exit() -> String{
-    return String::from("exit is called.");
+    ewutcom_lib::_COM_exit()
+}
+
+fn _CALL_clear_cli() -> String{
+    ewutcom_lib::_COM_clear_cli()
+}
+
+
+fn _CALLDIRECT_asciiart() -> String{
+    ewutrm_lib::_LIBFUNC_print_ascii_to_term();
+    String::from("")
 }
