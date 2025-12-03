@@ -1,4 +1,5 @@
 use std::process;
+use hardware_query::{SystemOverview};
 
 pub fn _COM_help() -> String{
     return r#"
@@ -78,11 +79,4 @@ pub fn _COM_clear_cli() -> String{
         Err(_) => return String::from("ERR!")
     }
     
-}
-
-pub fn _COM_change_title() -> String{
-    match process::Command::new("cmd").args(&["/C", "title", "1"]).status() {
-        Ok(_) => return String::from("OK!"),
-        Err(_) => return String::from("ERR!")
-    }    
 }

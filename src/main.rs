@@ -32,6 +32,8 @@ struct EWUT_config {
 
     input_str : String,
     input_str_color : [u8; 3],
+
+    cli_title : String,
 }
 
 
@@ -42,7 +44,9 @@ fn main(){
     let mut input_command : String = String::new();
 
 
-    ewutrm_lib::_LIBFUNC_print_ascii_to_term(); // first time ascii write
+    ewutrm_lib::_DIRECTFUNC_change_title(ewut_config.cli_title); // auto-title
+    //ewutrm_lib::_LIBFUNC_print_ascii_to_term(); // first time ascii write
+    ewutrm_lib::_LIBFUNC_getstartup();
     
     loop { // loop for the inputs
         input_command.clear();
@@ -53,7 +57,7 @@ fn main(){
 
         match ewutsearch_lib::_SEARCH_commandsearch(&input_command){
             Ok(okturn) => ewutrm_lib::_LIBFUNC_print("return_ok_color", okturn),
-            Err(errr) => println!("ERR! {}", errr)
+            Err(errturn) => ewutrm_lib::_LIBFUNC_print("return_err_color", errturn),
         }
         
     }

@@ -2,6 +2,8 @@ theme_name = "EWUTDark"
 cli_title = "EWUT"
 window_opacity = 10 # 0 - 100
 
+start_up_type = "ascii" # u can change that type into -> pc_health_info, pc_score, all_system
+
 term_ascii = """
 
  ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄ 
@@ -28,3 +30,4 @@ input_str = "-> "
 input_str_color = [255, 255, 255] # rgb code
 
 return_ok_color = [10, 209, 27]
+return_err_color = [217, 33, 20]

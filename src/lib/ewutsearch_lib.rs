@@ -18,7 +18,12 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
     commands.insert("/clear", _CALL_clear_cli);
     commands.insert("/0", _CALLDIRECT_asciiart);
 
-    if let Some(com) = commands.get(command_input){
+    if let Some(rest) = command_input.strip_prefix("/title "){
+        let comreturn = _CALLDIRECT_change_title(rest);
+        Ok(comreturn) // debug return
+    }
+
+    else if let Some(com) = commands.get(command_input){
         let comreturn = com();
         Ok(comreturn) // debug return
     } else {
@@ -49,6 +54,6 @@ fn _CALLDIRECT_asciiart() -> String{
     String::from("")
 }
 
-fn _CALL_change_title() -> String{
-    ewutcom_lib::_COM_change_title()
+fn _CALLDIRECT_change_title(input : &str) -> String{
+    ewutrm_lib::_DIRECTFUNC_change_title(input.to_string())
 }
