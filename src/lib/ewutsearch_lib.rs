@@ -48,3 +48,7 @@ fn _CALLDIRECT_asciiart() -> String{
     ewutrm_lib::_LIBFUNC_print_ascii_to_term();
     String::from("")
 }
+
+fn _CALL_change_title() -> String{
+    ewutcom_lib::_COM_change_title()
+}

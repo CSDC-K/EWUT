@@ -6,6 +6,7 @@
 
 use std::io;
 use std::fs;
+use std::process;
 use std::io::Write;
 use std::io::stdin;
 use std::io::stdout;
@@ -45,6 +46,13 @@ pub fn _LIBFUNC_print(type_of_print : &str, print_content : String) {
     let [r, g, b] = print_type;
 
     println!("{}", print_content.truecolor(r, g, b));
+}
+
+pub fn _DIRECTFUNC_change_title() -> String{
+    match process::Command::new("cmd").args(&["/C", "title", "1"]).status() {
+        Ok(_) => return String::from("OK!"),
+        Err(_) => return String::from("ERR!")
+    }
 }
 
 fn _event_load_configs() -> EWUT_config{

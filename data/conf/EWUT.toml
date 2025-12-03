@@ -1,4 +1,5 @@
 theme_name = "EWUTDark"
+cli_title = "EWUT"
 window_opacity = 10 # 0 - 100
 
 term_ascii = """

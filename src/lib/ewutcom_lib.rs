@@ -80,3 +80,9 @@ pub fn _COM_clear_cli() -> String{
     
 }
 
+pub fn _COM_change_title() -> String{
+    match process::Command::new("cmd").args(&["/C", "title", "1"]).status() {
+        Ok(_) => return String::from("OK!"),
+        Err(_) => return String::from("ERR!")
+    }    
+}
