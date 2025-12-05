@@ -1,4 +1,4 @@
-use std::process;
+use std::{io::{self, Write, stdout}, process};
 use hardware_query::{SystemOverview};
 
 pub fn _COM_help() -> String{
@@ -79,4 +79,16 @@ pub fn _COM_clear_cli() -> String{
         Err(_) => return String::from("ERR!")
     }
     
+}
+
+
+pub fn _COM_print_to_screen(input : &str, linetf : bool) -> (){
+    if (linetf == true) {
+        println!("{}", input);
+    } else if (linetf == false){
+        print!("{}", input);
+        stdout().flush().unwrap();
+    } else {
+        println!("{}", input);
+    }
 }

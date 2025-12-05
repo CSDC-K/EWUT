@@ -16,11 +16,19 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
     commands.insert("/help", _CALL_help);
     commands.insert("/exit", _CALL_exit);
     commands.insert("/clear", _CALL_clear_cli);
-    commands.insert("/0", _CALLDIRECT_asciiart);
+    commands.insert("/ascii", _CALLDIRECT_asciiart);
 
     if let Some(rest) = command_input.strip_prefix("/title "){
         let comreturn = _CALLDIRECT_change_title(rest);
         Ok(comreturn) // debug return
+    } else if let Some(rest) = command_input.strip_prefix("/println " ){
+        let comreturn = _CALL_print_to_screen(rest, true);
+        Ok(comreturn)
+    }
+
+    else if let Some(rest) = command_input.strip_prefix("/print " ){
+        let comreturn = _CALL_print_to_screen(rest, false);
+        Ok(comreturn)
     }
 
     else if let Some(com) = commands.get(command_input){
@@ -56,4 +64,9 @@ fn _CALLDIRECT_asciiart() -> String{
 
 fn _CALLDIRECT_change_title(input : &str) -> String{
     ewutrm_lib::_DIRECTFUNC_change_title(input.to_string())
+}
+
+fn _CALL_print_to_screen(input : &str, toline : bool) -> String{
+    ewutcom_lib::_COM_print_to_screen(input, toline);
+    return String::new();
 }
