@@ -15,6 +15,16 @@ use serde::{Deserialize, Serialize};
 use hardware_query::SystemOverview;
 use hardware_query::HardwarePresets;
 
+
+
+const RED: &str = "\x1b[31m";
+const GREEN: &str = "\x1b[32m";
+const YELLOW: &str = "\x1b[33m";
+const CYAN: &str = "\x1b[36m";
+const BOLD: &str = "\x1b[1m";
+const RESET: &str = "\x1b[0m";
+
+
 #[derive(Debug, Deserialize, Serialize)]
 struct EWUT_config {
     // theme configs
@@ -67,19 +77,61 @@ pub fn _LIBFUNC_pc_health() -> (){
     
 }
 
-pub fn _LIBFUNC_pc_score() -> (){
+
+fn make_progress_bar(score: u8) -> String {
+    let filled_len = (score as f32 / 10.0).round() as usize;
+    let empty_len = 10usize.saturating_sub(filled_len);
+    
+    let filled = "█".repeat(filled_len);
+    let empty = "·".repeat(empty_len);
+    
+    let color = if score < 50 { RED } else if score < 80 { YELLOW } else { GREEN };
+    
+    format!("{}{}{}{} {}", color, filled, RESET, empty, score)
+}
+
+pub fn _LIBFUNC_pc_score() {
+
     let ai_assessment = HardwarePresets::ai_assessment().unwrap();
-    println!("AI Score: {}/100", ai_assessment.ai_score);
-    println!("Supported Frameworks: {:?}", ai_assessment.frameworks);
-
-    // For gaming applications  
     let gaming_assessment = HardwarePresets::gaming_assessment().unwrap();
-    println!("Gaming Score: {}/100", gaming_assessment.gaming_score);
-    println!("Recommended Settings: {:?}", gaming_assessment.recommended_settings);
-
-    // For development environments
     let dev_assessment = HardwarePresets::developer_assessment().unwrap();
-    println!("Build Performance: {:?}", dev_assessment.dev_score);
+
+    println!();
+    println!("{}   HARDWARE SCORES & STATS{}", BOLD, RESET);
+    println!("   -----------------------");
+
+    // --- AI SECTION ---
+    println!("{}🤖 AI Capabilities:{}", CYAN, RESET);
+    println!(
+        "   {:<15} {}", 
+        "AI Score:", 
+        make_progress_bar(ai_assessment.ai_score as u8)
+    );
+
+    let frameworks_str = ai_assessment.frameworks
+            .iter()
+            .map(|f| format!("{:?}", f)) 
+            .collect::<Vec<String>>() 
+            .join(", ");
+    println!("   {:<15} {}", "Frameworks:", frameworks_str);
+    println!();
+
+    // --- GAMING SECTION ---
+    println!("{}🎮 Gaming Performance:{}", CYAN, RESET);
+    println!(
+        "   {:<15} {}", 
+        "Gaming Score:", 
+        make_progress_bar(gaming_assessment.gaming_score as u8)
+    );
+
+    println!("   {:<15} {:?}", "Rec. Settings:", gaming_assessment.recommended_settings);
+    println!();
+
+    // --- DEV SECTION ---
+    println!("{}🛠️  Dev Environment:{}", CYAN, RESET);
+    println!("   {:<15} {:?}", "Build Perf:", dev_assessment.dev_score);
+    
+    println!();
 }
 
 pub fn _LIBFUNC_getstartup(){
