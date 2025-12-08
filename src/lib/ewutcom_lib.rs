@@ -1,5 +1,9 @@
 use std::{io::{self, Write, stdout}, process};
 use hardware_query::{SystemOverview};
+use crate::ewutrm_lib;
+use std::fs;
+use std::env;
+use std::path::Path;
 
 pub fn _COM_help() -> String{
     return r#"
@@ -91,4 +95,51 @@ pub fn _COM_print_to_screen(input : &str, linetf : bool) -> (){
     } else {
         println!("{}", input);
     }
+}
+
+
+pub fn _COM_cd(cd : String) -> String {
+    let path = Path::new(&cd);
+
+    if !path.exists() {
+        return format!("ERR: '{}' diye bir klasör yok", cd);
+    }
+
+    print!("cc : {:?}", path);
+
+    match env::set_current_dir(path) {
+        Ok(_) => format!("OK: {}", cd),
+        Err(e) => format!("ERR: {}", e),
+    }
+}
+
+pub fn _COM_list() -> String{
+    let path = std::env::current_dir().unwrap();
+    let entries = fs::read_dir(path).expect("Error! Path Reading Error.");
+    let mut folders = Vec::new();
+    let mut files = Vec::new();
+
+    for entry in entries {
+        let entry = entry.unwrap();
+        let metadata = entry.metadata().unwrap();
+        let name = entry.file_name().into_string().unwrap();
+
+        if metadata.is_dir() {
+            folders.push(name);
+        } else {
+            files.push(name);
+        }
+    }
+
+    for folder in folders {
+        ewutrm_lib::_LIBFUNC_print("folders_color", folder);
+    }
+
+    for file in files {
+        ewutrm_lib::_LIBFUNC_print("files_color", file);
+    }
+
+    return String::new();
+    
+
 }

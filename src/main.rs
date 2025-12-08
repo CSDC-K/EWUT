@@ -20,6 +20,7 @@ mod lib{
 
 
 
+
 #[derive(Debug, Deserialize, Serialize)]
 struct EWUT_config {
     // theme configs
@@ -33,7 +34,15 @@ struct EWUT_config {
     input_str : String,
     input_str_color : [u8; 3],
 
+    return_ok_color : [u8; 3],
+    return_err_color : [u8; 3],
+
+    folders_color : [u8; 3],
+    files_color : [u8; 3],
+
     cli_title : String,
+
+    start_up_type : String,
 }
 
 

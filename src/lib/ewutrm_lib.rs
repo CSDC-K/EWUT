@@ -41,6 +41,9 @@ struct EWUT_config {
     return_ok_color : [u8; 3],
     return_err_color : [u8; 3],
 
+    folders_color : [u8; 3],
+    files_color : [u8; 3],
+
     start_up_type : String,
 }
 
@@ -56,6 +59,8 @@ pub fn _LIBFUNC_print(type_of_print : &str, print_content : String) {
     let print_type = match type_of_print {
         "return_ok_color" => print_conf.return_ok_color,
         "return_err_color" => print_conf.return_err_color,
+        "folders_color" => print_conf.folders_color,
+        "files_color" => print_conf.files_color,
         _ => [255, 255, 255]
     };
 

@@ -17,6 +17,7 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
     commands.insert("/exit", _CALL_exit);
     commands.insert("/clear", _CALL_clear_cli);
     commands.insert("/ascii", _CALLDIRECT_asciiart);
+    commands.insert("ls", _CALL_list);
 
     if let Some(rest) = command_input.strip_prefix("/title "){
         let comreturn = _CALLDIRECT_change_title(rest);
@@ -24,11 +25,13 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
     } else if let Some(rest) = command_input.strip_prefix("/println " ){
         let comreturn = _CALL_print_to_screen(rest, true);
         Ok(comreturn)
-    }
-
-    else if let Some(rest) = command_input.strip_prefix("/print " ){
+    } else if let Some(rest) = command_input.strip_prefix("/print " ){
         let comreturn = _CALL_print_to_screen(rest, false);
         Ok(comreturn)
+    } else if let Some(rest) = command_input.strip_prefix("cd ") {
+        println!("{}", rest);
+        let comreturn = _CALL_cd(rest);
+        Ok(comreturn) 
     }
 
     else if let Some(com) = commands.get(command_input){
@@ -69,4 +72,13 @@ fn _CALLDIRECT_change_title(input : &str) -> String{
 fn _CALL_print_to_screen(input : &str, toline : bool) -> String{
     ewutcom_lib::_COM_print_to_screen(input, toline);
     return String::new();
+}
+
+fn _CALL_list() -> String{
+    ewutcom_lib::_COM_list()
+}
+
+fn _CALL_cd(input : &str) -> String{
+    println!("{}", input);
+    ewutcom_lib::_COM_cd(input.into())
 }
