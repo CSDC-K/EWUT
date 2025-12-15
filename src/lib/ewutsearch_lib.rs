@@ -29,7 +29,6 @@ pub fn _SEARCH_commandsearch(command_input : &str) -> Result<String, String>{
         let comreturn = _CALL_print_to_screen(rest, false);
         Ok(comreturn)
     } else if let Some(rest) = command_input.strip_prefix("cd ") {
-        println!("{}", rest);
         let comreturn = _CALL_cd(rest);
         Ok(comreturn) 
     }
@@ -79,6 +78,5 @@ fn _CALL_list() -> String{
 }
 
 fn _CALL_cd(input : &str) -> String{
-    println!("{}", input);
     ewutcom_lib::_COM_cd(input.into())
 }

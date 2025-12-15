@@ -6,14 +6,21 @@
 
 use std::io;
 use std::fs;
+use std::path;
+use dirs;
 use std::process;
 use std::io::Write;
 use std::io::stdin;
 use std::io::stdout;
 use colored::Colorize;
+use std::path::Path;
 use serde::{Deserialize, Serialize};
 use hardware_query::SystemOverview;
 use hardware_query::HardwarePresets;
+use std::env;
+
+use crate::lib::ewutcom_lib;
+
 
 
 
@@ -47,10 +54,12 @@ struct EWUT_config {
     start_up_type : String,
 }
 
+
 pub fn _LIBFUNC_print_ascii_to_term(){
     let ascii_conf = _event_load_configs();
     let [term_r, term_g, term_b] = ascii_conf.term_ascii_color;
     println!(r#"{}"#, ascii_conf.term_ascii.truecolor(term_r, term_g, term_b));
+    
 }
 
 pub fn _LIBFUNC_print(type_of_print : &str, print_content : String) {
@@ -152,7 +161,12 @@ pub fn _LIBFUNC_getstartup(){
 }
 
 fn _event_load_configs() -> EWUT_config{
-    let config_data = fs::read_to_string("data\\conf\\EWUT.toml").unwrap();
+
+    let confdir = env::var("USERPROFILE").expect("Path Error") + "\\AppData\\Roaming\\EWUT\\";
+
+
+    let config_data = fs::read_to_string(confdir + "data\\conf\\EWUT.toml").unwrap();
     let rtn = toml::from_str::<EWUT_config>(&config_data).unwrap();
     rtn
 }
+

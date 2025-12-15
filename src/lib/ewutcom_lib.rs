@@ -102,15 +102,15 @@ pub fn _COM_cd(cd : String) -> String {
     let path = Path::new(&cd);
 
     if !path.exists() {
-        return format!("ERR: '{}' diye bir klasör yok", cd);
+        return format!("Path Not Found.");
     }
 
-    print!("cc : {:?}", path);
 
     match env::set_current_dir(path) {
         Ok(_) => format!("OK: {}", cd),
         Err(e) => format!("ERR: {}", e),
     }
+
 }
 
 pub fn _COM_list() -> String{
