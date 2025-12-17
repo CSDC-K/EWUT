@@ -1,172 +1,128 @@
-/// TERMINAL OUTPUT SYSTEM LIBRARY
-/// this library is for basic and not input required functions.
-/// LIB : BASIC_OUTPUT_TERMINAL_FUNCTIONS
-/// VER : 0.1
-
-
-use std::io;
 use std::fs;
-use std::path;
-use dirs;
-use std::process;
-use std::io::Write;
-use std::io::stdin;
-use std::io::stdout;
-use colored::Colorize;
-use std::path::Path;
-use serde::{Deserialize, Serialize};
-use hardware_query::SystemOverview;
-use hardware_query::HardwarePresets;
 use std::env;
+use serde::{Deserialize, Serialize};
+use hardware_query::{SystemOverview, HardwarePresets};
+use ratatui::style::Color;
 
-use crate::lib::ewutcom_lib;
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ThemeConfig {
+    pub theme_name: String,
+    pub window_opacity: u8,
+}
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ColorConfig {
+    pub primary_color: [u8; 3],
+    pub secondary_color: [u8; 3],
+    pub text_color: [u8; 3],
+    pub success_color: [u8; 3],
+    pub error_color: [u8; 3],
+    pub input_color: [u8; 3],
+    pub background_color: [u8; 3],
+}
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct SettingsConfig {
+    pub start_up_type: String,
+    pub term_ascii: String,
+    pub prompt_symbol: String,
+}
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct EwutConfig {
+    pub theme: ThemeConfig,
+    pub colors: ColorConfig,
+    pub settings: SettingsConfig,
+}
 
-const RED: &str = "\x1b[31m";
-const GREEN: &str = "\x1b[32m";
-const YELLOW: &str = "\x1b[33m";
-const CYAN: &str = "\x1b[36m";
-const BOLD: &str = "\x1b[1m";
-const RESET: &str = "\x1b[0m";
+// Helper to convert [u8; 3] to Ratatui Color
+pub fn to_rgb(arr: [u8; 3]) -> Color {
+    Color::Rgb(arr[0], arr[1], arr[2])
+}
 
-
-#[derive(Debug, Deserialize, Serialize)]
-struct EWUT_config {
-    // theme configs
-    theme_name : String,
+pub fn _event_load_configs() -> EwutConfig {
+    let confdir = env::var("USERPROFILE").unwrap_or(".".to_string()) + "\\AppData\\Roaming\\EWUT\\";
     
-    window_opacity : u8,
-
-    term_ascii : String,
-    term_ascii_color : [u8; 3],
-
-    input_str : String,
-    input_str_color : [u8; 3],
-
-    return_ok_color : [u8; 3],
-    return_err_color : [u8; 3],
-
-    folders_color : [u8; 3],
-    files_color : [u8; 3],
-
-    start_up_type : String,
-}
-
-
-pub fn _LIBFUNC_print_ascii_to_term(){
-    let ascii_conf = _event_load_configs();
-    let [term_r, term_g, term_b] = ascii_conf.term_ascii_color;
-    println!(r#"{}"#, ascii_conf.term_ascii.truecolor(term_r, term_g, term_b));
-    
-}
-
-pub fn _LIBFUNC_print(type_of_print : &str, print_content : String) {
-    let print_conf = _event_load_configs();
-
-    let print_type = match type_of_print {
-        "return_ok_color" => print_conf.return_ok_color,
-        "return_err_color" => print_conf.return_err_color,
-        "folders_color" => print_conf.folders_color,
-        "files_color" => print_conf.files_color,
-        _ => [255, 255, 255]
-    };
-
-    let [r, g, b] = print_type;
-
-    println!("{}", print_content.truecolor(r, g, b));
-}
-
-pub fn _DIRECTFUNC_change_title(title_arg : String) -> String{
-    match process::Command::new("cmd").args(&["/C", "title", title_arg.as_str()]).status() {
-        Ok(_) => return String::from("OK!"),
-        Err(_) => return String::from("ERR!")
+    match fs::read_to_string(confdir + "data\\conf\\EWUT.toml") {
+        Ok(data) => toml::from_str::<EwutConfig>(&data).unwrap_or_else(|_| _default_config()),
+        Err(_) => _default_config(),
     }
 }
 
-pub fn _LIBFUNC_pc_health() -> (){
-    let overview = SystemOverview::quick().unwrap();
-    println!("{:?}", overview);
-    
+fn _default_config() -> EwutConfig {
+    EwutConfig {
+        theme: ThemeConfig { theme_name: "Default".into(), window_opacity: 255 },
+        colors: ColorConfig {
+            primary_color: [0, 255, 255],
+            secondary_color: [255, 0, 255],
+            text_color: [255, 255, 255],
+            success_color: [0, 255, 0],
+            error_color: [255, 0, 0],
+            input_color: [255, 255, 0],
+            background_color: [0, 0, 0],
+        },
+        settings: SettingsConfig {
+            start_up_type: "ascii".into(),
+            term_ascii: "EWUT TERMINAL".into(),
+            prompt_symbol: ">".into(),
+        },
+    }
 }
 
+pub fn _LIBFUNC_print_ascii_to_term() -> String {
+    let conf = _event_load_configs();
+    format!("\n{}\n", conf.settings.term_ascii)
+}
+
+pub fn _DIRECTFUNC_change_title(title_arg: String) -> String {
+    let _ = std::process::Command::new("cmd").args(&["/C", "title", title_arg.as_str()]).status();
+    String::from("System Window Title Updated.")
+}
+
+pub fn _LIBFUNC_pc_health() -> String {
+    match SystemOverview::quick() {
+        Ok(overview) => format!("{:#?}", overview),
+        Err(_) => "Could not fetch system information.".to_string(),
+    }
+}
 
 fn make_progress_bar(score: u8) -> String {
     let filled_len = (score as f32 / 10.0).round() as usize;
     let empty_len = 10usize.saturating_sub(filled_len);
-    
     let filled = "█".repeat(filled_len);
-    let empty = "·".repeat(empty_len);
-    
-    let color = if score < 50 { RED } else if score < 80 { YELLOW } else { GREEN };
-    
-    format!("{}{}{}{} {}", color, filled, RESET, empty, score)
+    let empty = "░".repeat(empty_len);
+    format!("{}{}", filled, empty) 
 }
 
-pub fn _LIBFUNC_pc_score() {
-
-    let ai_assessment = HardwarePresets::ai_assessment().unwrap();
-    let gaming_assessment = HardwarePresets::gaming_assessment().unwrap();
-    let dev_assessment = HardwarePresets::developer_assessment().unwrap();
-
-    println!();
-    println!("{}   HARDWARE SCORES & STATS{}", BOLD, RESET);
-    println!("   -----------------------");
-
-    // --- AI SECTION ---
-    println!("{}🤖 AI Capabilities:{}", CYAN, RESET);
-    println!(
-        "   {:<15} {}", 
-        "AI Score:", 
-        make_progress_bar(ai_assessment.ai_score as u8)
-    );
-
-    let frameworks_str = ai_assessment.frameworks
-            .iter()
-            .map(|f| format!("{:?}", f)) 
-            .collect::<Vec<String>>() 
-            .join(", ");
-    println!("   {:<15} {}", "Frameworks:", frameworks_str);
-    println!();
-
-    // --- GAMING SECTION ---
-    println!("{}🎮 Gaming Performance:{}", CYAN, RESET);
-    println!(
-        "   {:<15} {}", 
-        "Gaming Score:", 
-        make_progress_bar(gaming_assessment.gaming_score as u8)
-    );
-
-    println!("   {:<15} {:?}", "Rec. Settings:", gaming_assessment.recommended_settings);
-    println!();
-
-    // --- DEV SECTION ---
-    println!("{}🛠️  Dev Environment:{}", CYAN, RESET);
-    println!("   {:<15} {:?}", "Build Perf:", dev_assessment.dev_score);
+pub fn _LIBFUNC_pc_score() -> String {
+    let mut output = String::new();
     
-    println!();
+    if let (Ok(ai), Ok(gaming), Ok(dev)) = (
+        HardwarePresets::ai_assessment(),
+        HardwarePresets::gaming_assessment(),
+        HardwarePresets::developer_assessment()
+    ) {
+        output.push_str("\n   HARDWARE PERFORMANCE METRICS\n   ────────────────────────────\n");
+        output.push_str(&format!("🤖 AI Capability: {} ({})\n", make_progress_bar(ai.ai_score as u8), ai.ai_score));
+        output.push_str(&format!("🎮 Gaming Power:  {} ({})\n", make_progress_bar(gaming.gaming_score as u8), gaming.gaming_score));
+        output.push_str(&format!("🛠️ Dev Workflow:  {} ({})\n", make_progress_bar(dev.dev_score as u8), dev.dev_score));
+    } else {
+        output.push_str("Hardware analysis failed.\n");
+    }
+    
+    output
 }
 
-pub fn _LIBFUNC_getstartup(){
-    let start_type = _event_load_configs();
+pub fn _LIBFUNC_getstartup() -> String {
+    let conf = _event_load_configs();
 
-    if (start_type.start_up_type == "ascii"){
-        _LIBFUNC_print_ascii_to_term();
-    } else if (start_type.start_up_type == "pc_health_info") {
-        _LIBFUNC_pc_health();
-    } else if(start_type.start_up_type == "pc_score"){
-        _LIBFUNC_pc_score();
+    if conf.settings.start_up_type == "ascii" {
+        _LIBFUNC_print_ascii_to_term()
+    } else if conf.settings.start_up_type == "pc_health_info" {
+        _LIBFUNC_pc_health()
+    } else if conf.settings.start_up_type == "pc_score" {
+        _LIBFUNC_pc_score()
+    } else {
+        "EWUT Terminal System Ready.".to_string()
     }
 }
-
-fn _event_load_configs() -> EWUT_config{
-
-    let confdir = env::var("USERPROFILE").expect("Path Error") + "\\AppData\\Roaming\\EWUT\\";
-
-
-    let config_data = fs::read_to_string(confdir + "data\\conf\\EWUT.toml").unwrap();
-    let rtn = toml::from_str::<EWUT_config>(&config_data).unwrap();
-    rtn
-}
-

@@ -1,9 +1,31 @@
-theme_name = "EWUTDark"
-cli_title = "EWUT"
-window_opacity = 10 # 0 - 100
+[theme]
+theme_name = "EWUTDEFAULT"
+window_opacity = 255
 
-start_up_type = "ascii" # u can change that type into -> pc_health_info, pc_score, all_system
+[colors]
+# Main UI Borders (Neon Cyan)
+primary_color = [100, 50, 200]
 
+# Secondary UI Elements/Titles (Hot Pink)
+secondary_color = [255, 0, 128]
+
+# Standard Text Output (White/Light Grey)
+text_color = [220, 220, 220]
+
+# Success Messages (Neon Green)
+success_color = [50, 255, 50]
+
+# Error Messages (Red/Orange)
+error_color = [255, 60, 60]
+
+# User Input Text (Yellow/Gold)
+input_color = [255, 215, 0]
+
+# Background (Very Dark Blue - Almost Black)
+background_color = [10, 10, 20]
+
+[settings]
+start_up_type = "ascii"
 term_ascii = """
 
  ▄▄▄▄▄▄▄▄▄▄▄  ▄         ▄  ▄         ▄  ▄▄▄▄▄▄▄▄▄▄▄ 
@@ -20,17 +42,4 @@ term_ascii = """
                                                     
 
 """
-
-basic_str_color = []
-
-
-term_ascii_color = [30, 191, 227]
-
-input_str = "-> "
-input_str_color = [255, 255, 255] # rgb code
-
-return_ok_color = [10, 209, 27]
-return_err_color = [217, 33, 20]
-
-files_color = [1, 1, 1]
-folders_color = [1, 1, 1]
+prompt_symbol = "❯"
