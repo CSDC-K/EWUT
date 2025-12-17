@@ -1,81 +1,98 @@
-use core::str;
-use std::io;
-use std::fs;
-use std::io::Write;
-use std::io::stdin;
-use std::io::stdout;
-use colored::Colorize;
-use serde::{Deserialize, Serialize};
+use std::{io::{self, stdout}, time::Duration};
+use color_eyre::eyre::Ok;
+use ratatui::{
+    backend::{Backend, CrosstermBackend},
+    layout::{Constraint, Direction, Layout, Rect},
+    style::{Color, Modifier, Style, Stylize},
+    text::{Line, Span},
+    widgets::{Block, Borders, List, ListItem, Paragraph},
+    Frame, Terminal,
+};
+use crossterm::{
+    ExecutableCommand, event::{self, Event, KeyCode, KeyEventKind}, terminal::{self, EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode}
+};
+
+use eyre::Result;
 
 
-use crate::lib::ewutrm_lib;
-use crate::lib::ewutsearch_lib;
-use crate::lib::ewutcom_lib;
-
-mod lib{
-    pub mod ewutrm_lib;
-    pub mod ewutsearch_lib;
-    pub mod ewutcom_lib;
+struct App {
+    input: String,
+    messages: Vec<String>,
 }
 
-
-
-
-#[derive(Debug, Deserialize, Serialize)]
-struct EWUT_config {
-    // theme configs
-    theme_name : String,
-    
-    window_opacity : u8,
-
-    term_ascii : String,
-    term_ascii_color : [u8; 3],
-
-    input_str : String,
-    input_str_color : [u8; 3],
-
-    return_ok_color : [u8; 3],
-    return_err_color : [u8; 3],
-
-    folders_color : [u8; 3],
-    files_color : [u8; 3],
-
-    cli_title : String,
-
-    start_up_type : String,
-}
-
-
-fn main(){
-    // load ThemeConfigs
-    let ewut_config = _event_load_configs();
-    let [inp_r, inp_g, inp_b] = ewut_config.input_str_color;
-    let mut input_command : String = String::new();
-
-
-    ewutrm_lib::_DIRECTFUNC_change_title(ewut_config.cli_title); // auto-title
-    //ewutrm_lib::_LIBFUNC_print_ascii_to_term(); // first time ascii write
-    ewutrm_lib::_LIBFUNC_getstartup();
-    
-    loop { // loop for the inputs
-        input_command.clear();
-        print!("{}", ewut_config.input_str.truecolor(inp_r, inp_g, inp_b));
-        stdout().flush().unwrap(); // flush memory for print
-        stdin().read_line(&mut input_command).expect("Error!");
-        input_command = input_command.trim().to_string();
-
-        match ewutsearch_lib::_SEARCH_commandsearch(&input_command){
-            Ok(okturn) => ewutrm_lib::_LIBFUNC_print("return_ok_color", okturn),
-            Err(errturn) => ewutrm_lib::_LIBFUNC_print("return_err_color", errturn),
+impl App {
+    fn new() -> Self {
+        Self {
+            input: String::new(),
+            messages: vec!["TEST".to_string()],
         }
-        
     }
 
+    // Sadece metni yukarı aktarır, komut çalıştırmaz
+    fn push_message(&mut self) {
+        if !self.input.is_empty() {
+            self.messages.push(self.input.clone());
+            self.input.clear();
+        }
+    }
 }
 
+fn main() -> Result<()>{
+    enable_raw_mode();
+    stdout().execute(EnterAlternateScreen)?;
+    let mut terminal = Terminal::new(CrosstermBackend::new(stdout()))?;
 
-fn _event_load_configs() -> EWUT_config{
-    let config_data = fs::read_to_string("data\\conf\\EWUT.toml").unwrap();
-    let rtn = toml::from_str::<EWUT_config>(&config_data).unwrap();
-    rtn
+    let mut app = App::new();
+    let res = run_app(&mut terminal, &mut app);
+
+
+    res
+}
+
+fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> Result<()> {
+    loop {
+        terminal.draw(|f| ui(f, app))?;
+
+        if let Event::Key(key) = event::read()? {
+            if key.kind == KeyEventKind::Press {
+                match key.code {
+                    KeyCode::Char(c) => app.input.push(c),
+                    KeyCode::Backspace => { app.input.pop(); },
+                    KeyCode::Enter => app.push_message(),
+                    KeyCode::Esc => return Ok(()),
+                    _ => {}
+                }
+            }
+        }
+    }
+}
+
+fn ui(f: &mut Frame, app: &App) {
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Min(1), Constraint::Length(3)])
+        .split(f.area());
+
+    
+    let list_items: Vec<ListItem> = app.messages
+        .iter()
+                .rev()
+        .map(|m| ListItem::new(m.as_str()))
+        .collect();
+
+    let history = List::new(list_items)
+        .block(Block::default().borders(Borders::ALL).title(" Msgs "));
+    f.render_widget(history, chunks[0]);
+
+    // Input
+    let input_area = Paragraph::new(app.input.as_str())
+        .style(Style::default().fg(Color::Yellow))
+        .block(Block::default().borders(Borders::ALL).title(" Input "));
+    f.render_widget(input_area, chunks[1]);
+
+
+    f.set_cursor_position((
+        chunks[1].x + app.input.len() as u16 + 1,
+        chunks[1].y + 1,
+    ));
 }
