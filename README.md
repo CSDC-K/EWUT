@@ -1,7 +1,7 @@
 # ⚡ EWUT Terminal
 > **Empowering Windows users with a high-performance, modern, and intuitive Terminal UI.**
 
-EWUT (Enhanced Windows Universal Terminal) is a Rust-based terminal interface designed to streamline access to Windows commands while providing a sleek, Cyberpunk-inspired aesthetic. Built with **Ratatui**, it offers real-time hardware monitoring, advanced file system navigation, and a fully customizable theme engine.
+EWUT (Easy Windows Universal Terminal) is a Rust-based terminal interface designed to streamline access to Windows commands while providing a sleek, Cyberpunk-inspired aesthetic. Built with **Ratatui**, it offers real-time hardware monitoring, advanced file system navigation, and a fully customizable theme engine.
 
 ---
 
