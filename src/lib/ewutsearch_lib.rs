@@ -11,7 +11,7 @@ pub fn _SEARCH_commandsearch(command_input: &str) -> Result<String, String> {
     commands.insert("ascii", _CALLDIRECT_asciiart);
     commands.insert("ls", _CALL_list);
 
-    // Using "start_with" for commands with arguments
+    // Using "start_with" for commands with arguments 
     if let Some(rest) = command_input.strip_prefix("title ") {
         Ok(_CALLDIRECT_change_title(rest))
     } else if let Some(rest) = command_input.strip_prefix("print ") {
